@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - EventSphere</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .back-home:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .events-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: #667eea;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .event-type {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .event-date {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .event-organizer {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .event-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .detail-icon {
+            font-size: 1.2rem;
+        }
+
+        .event-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .event-footer {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .register-btn {
+            flex: 1;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-btn {
+            padding: 0.9rem 1.5rem;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .info-btn:hover {
+            background: #f9f9ff;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .status-badge.ongoing {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.upcoming {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.registration-open {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .no-events-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-events h3 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-events p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-home">← Back to Home</a>
+        <a href="event_details.html?id=EVENT_ID_HERE">
+  <h3>Event Title</h3>
+</a>
+
+        <header>
+            <h1>Discover Events</h1>
+            <p>Browse current and upcoming workshops, webinars, and hackathons</p>
+        </header>
+
+        <div class="controls-section">
+            <div class="filter-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterEvents('all')">All Events</button>
+                    <button class="filter-btn" onclick="filterEvents('workshop')">Workshops</button>
+                    <button class="filter-btn" onclick="filterEvents('webinar')">Webinars</button>
+                    <button class="filter-btn" onclick="filterEvents('hackathon')">Hackathons</button>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search events..." onkeyup="searchEvents()">
+                    <button class="search-btn" onclick="searchEvents()">Search</button>
+                </div>
+            </div>
+            
+            <div class="events-stats">
+                <span>Showing:</span>
+                <span class="stat-badge" id="event-count">0 Events</span>
+            </div>
+        </div>
+
+        <div class="events-grid" id="events-grid"></div>
+    </div>
+
+    <script>
+
+    let allEvents = [];
+    let currentFilter = "all";
+
+// Load events from backend
+async function loadEvents() {
+    try {
+        const res = await fetch("http://localhost:5000/api/events");
+        const events = await res.json();
+        allEvents = events;
+        renderEvents(allEvents);
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
+
+// Render events
+function renderEvents(events) {
+    const grid = document.getElementById("events-grid");
+    const countBadge = document.getElementById("event-count");
+
+    countBadge.textContent = `${events.length} Event${events.length !== 1 ? "s" : ""}`;
+
+    if (events.length === 0) {
+        grid.innerHTML = `
+            <div class="no-events">
+                <div class="no-events-icon">🔍</div>
+                <h3>No Events Found</h3>
+                <p>Try adjusting filters or search terms</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = events.map(event => `
+        <div class="event-card" data-type="${event.type}">
+            <div class="event-header">
+                <div class="event-type">${capitalize(event.type)}</div>
+                <div class="event-date">📅 ${event.date}</div>
+                <h3 class="event-title">${event.title}</h3>
+                <div class="event-organizer">by ${event.organizer}</div>
+            </div>
+            <div class="event-body">
+                <span class="status-badge ${event.status}">
+                    ${event.status.replace("-", " ").toUpperCase()}
+                </span>
+
+                <p class="event-description">${event.description}</p>
+
+                <div class="event-details">
+                    <div class="detail-item"><span class="detail-icon">📍</span>${event.location}</div>
+                    <div class="detail-item"><span class="detail-icon">⏱️</span>${event.duration}</div>
+                    <div class="detail-item"><span class="detail-icon">💰</span>${event.prize}</div>
+                    <div class="detail-item"><span class="detail-icon">👥</span>${event.participants}</div>
+                </div>
+
+                <div class="event-tags">
+                    ${event.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
+                </div>
+
+                <div class="event-footer">
+                    <button class="register-btn" 
+        data-event-id="${event.id}" 
+        data-registered="false"
+        onclick="registerEvent(${event.id})">
+    Register Now
+</button>
+
+                    <button class="info-btn" onclick="showEventInfo(${event.id})">ℹ️</button>
+                </div>
+            </div>
+        </div>
+    `).join("");
+}
+
+function capitalize(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+
+// Filter
+function filterEvents(type) {
+    currentFilter = type;
+    const btns = document.querySelectorAll(".filter-btn");
+    btns.forEach(b => b.classList.remove("active"));
+    event.target.classList.add("active");
+
+    const filtered = type === "all" ? allEvents : allEvents.filter(e => e.type === type);
+    renderEvents(filtered);
+}
+
+// Search
+function searchEvents() {
+    const term = document.getElementById("search-input").value.toLowerCase();
+    const filtered = allEvents.filter(e =>
+        e.title.toLowerCase().includes(term) ||
+        e.description.toLowerCase().includes(term) ||
+        e.organizer.toLowerCase().includes(term) ||
+        e.tags.some(t => t.toLowerCase().includes(term))
+    );
+    renderEvents(filtered);
+}
+
+// Registration (toggle)
+async function registerEvent(eventId) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        alert("Login first");
+        window.location.href = "studentlogin.html";
+        return;
+    }
+
+    const btn = document.querySelector(`button[data-event-id="${eventId}"]`);
+
+    // If already registered → UNREGISTER
+    if (btn && btn.dataset.registered === "true") {
+        const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        const data = await res.json();
+        alert(data.message);
+
+        btn.textContent = "Register Now";
+        btn.dataset.registered = "false";
+        return;
+    }
+
+    // Else → REGISTER
+    const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    btn.textContent = "Registered";
+    btn.dataset.registered = "true";
+}
+    
+    loadEvents();
+
+</script>
+
+</body>
+</html>

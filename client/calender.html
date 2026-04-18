@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Calendar - EventSphere</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .back-home:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .calendar-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .calendar-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .months-list {
+            padding: 2rem;
+        }
+
+        .month-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 3px solid transparent;
+        }
+
+        .month-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .month-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .month-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .month-icon {
+            display: none;
+        }
+
+        .month-details h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .month-details p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .month-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .month-item:not(.active) .month-count {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .internship-section {
+            display: none;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-top: 3px solid #667eea;
+            animation: slideDown 0.4s ease;
+        }
+
+        .internship-section.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 2000px;
+            }
+        }
+
+        .internship-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .internship-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border-left: 5px solid #667eea;
+        }
+
+        .internship-card:hover {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .internship-card h3 {
+            color: #667eea;
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .company {
+            color: #764ba2;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .internship-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .detail-item .icon {
+            font-size: 1.3rem;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+            border: 1px solid #667eea30;
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .no-internships {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .no-internships .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-internships h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .month-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .month-info {
+                width: 100%;
+            }
+
+            .month-details h3 {
+                font-size: 1.4rem;
+            }
+
+            .internship-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-home">← Back to Home</a>
+        
+        <header>
+            <h1>📆 Internship Calendar 2025</h1>
+            <p>Click on any month to view upcoming internship opportunities</p>
+        </header>
+
+        <div class="calendar-wrapper">
+            <div class="calendar-header">
+                <h2>2025 Internship Timeline</h2>
+                <p>Track application deadlines throughout the year</p>
+            </div>
+
+            <div class="months-list" id="months-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const months = [
+            { name: 'January', season: 'Winter' },
+            { name: 'February', season: 'Winter' },
+            { name: 'March', season: 'Spring' },
+            { name: 'April', season: 'Spring' },
+            { name: 'May', season: 'Spring' },
+            { name: 'June', season: 'Summer' },
+            { name: 'July', season: 'Summer' },
+            { name: 'August', season: 'Summer' },
+            { name: 'September', season: 'Fall' },
+            { name: 'October', season: 'Fall' },
+            { name: 'November', season: 'Fall' },
+            { name: 'December', season: 'Winter' }
+        ];
+
+        const internshipsData = {
+            0: [ // January
+                { title: 'Software Engineering Intern', company: 'Google', deadline: 15, location: 'Mountain View, CA', duration: '12 weeks', stipend: '$8,000/month', tags: ['Python', 'Java', 'Cloud Computing', 'Backend'] },
+                { title: 'Product Manager Intern', company: 'Microsoft', deadline: 20, location: 'Seattle, WA', duration: '10 weeks', stipend: '$7,500/month', tags: ['Product Strategy', 'Agile', 'User Research'] },
+                { title: 'UX Design Intern', company: 'Apple', deadline: 25, location: 'Cupertino, CA', duration: '12 weeks', stipend: '$7,000/month', tags: ['Figma', 'UI/UX', 'User Research', 'Prototyping'] }
+            ],
+            1: [ // February
+                { title: 'Data Science Intern', company: 'Meta', deadline: 5, location: 'Menlo Park, CA', duration: '12 weeks', stipend: '$8,500/month', tags: ['Machine Learning', 'Python', 'Analytics', 'Statistics'] },
+                { title: 'Frontend Developer Intern', company: 'Netflix', deadline: 12, location: 'Los Gatos, CA', duration: '10 weeks', stipend: '$7,800/month', tags: ['React', 'JavaScript', 'CSS', 'TypeScript'] },
+                { title: 'Marketing Intern', company: 'Amazon', deadline: 18, location: 'Seattle, WA', duration: '12 weeks', stipend: '$6,500/month', tags: ['Digital Marketing', 'SEO', 'Analytics', 'Content'] },
+                { title: 'Mobile App Developer', company: 'Uber', deadline: 28, location: 'San Francisco, CA', duration: '12 weeks', stipend: '$8,000/month', tags: ['iOS', 'Android', 'Swift', 'Kotlin'] }
+            ],
+            2: [ // March
+                { title: 'Machine Learning Intern', company: 'OpenAI', deadline: 10, location: 'San Francisco, CA', duration: '16 weeks', stipend: '$9,000/month', tags: ['PyTorch', 'TensorFlow', 'NLP', 'Deep Learning'] },
+                { title: 'Business Analyst Intern', company: 'McKinsey & Company', deadline: 15, location: 'New York, NY', duration: '10 weeks', stipend: '$7,000/month', tags: ['Excel', 'SQL', 'Consulting', 'Analysis'] },
+                { title: 'UI Designer Intern', company: 'Adobe', deadline: 22, location: 'San Jose, CA', duration: '12 weeks', stipend: '$6,800/month', tags: ['Photoshop', 'Illustrator', 'XD', 'Design Systems'] }
+            ],
+            3: [ // April
+                { title: 'Full Stack Developer', company: 'Stripe', deadline: 8, location: 'Remote', duration: '12 weeks', stipend: '$8,200/month', tags: ['Node.js', 'React', 'PostgreSQL', 'APIs'] },
+                { title: 'Data Analyst Intern', company: 'Airbnb', deadline: 14, location: 'San Francisco, CA', duration: '12 weeks', stipend: '$7,500/month', tags: ['SQL', 'Tableau', 'Python', 'Reporting'] },
+                { title: 'Product Design Intern', company: 'Spotify', deadline: 20, location: 'Stockholm, Sweden', duration: '10 weeks', stipend: '€6,000/month', tags: ['Sketch', 'Prototyping', 'User Research', 'Mobile Design'] },
+                { title: 'Finance Intern', company: 'Goldman Sachs', deadline: 30, location: 'New York, NY', duration: '10 weeks', stipend: '$7,200/month', tags: ['Finance', 'Excel', 'Financial Modeling', 'Analysis'] }
+            ],
+            4: [ // May
+                { title: 'DevOps Engineer Intern', company: 'Docker', deadline: 5, location: 'Remote', duration: '12 weeks', stipend: '$7,800/month', tags: ['Docker', 'Kubernetes', 'AWS', 'CI/CD'] },
+                { title: 'AI Research Intern', company: 'DeepMind', deadline: 12, location: 'London, UK', duration: '16 weeks', stipend: '£7,500/month', tags: ['AI Research', 'Python', 'Mathematics', 'Publications'] },
+                { title: 'Brand Designer Intern', company: 'Nike', deadline: 18, location: 'Portland, OR', duration: '10 weeks', stipend: '$6,500/month', tags: ['Branding', 'Graphics', 'Creative Direction', 'Adobe Suite'] }
+            ],
+            5: [ // June
+                { title: 'Backend Developer Intern', company: 'Salesforce', deadline: 10, location: 'San Francisco, CA', duration: '12 weeks', stipend: '$8,000/month', tags: ['Java', 'Spring', 'Microservices', 'Cloud'] },
+                { title: 'Quantitative Analyst Intern', company: 'Citadel', deadline: 15, location: 'Chicago, IL', duration: '10 weeks', stipend: '$10,000/month', tags: ['Mathematics', 'Statistics', 'C++', 'Finance'] },
+                { title: 'Strategy Intern', company: 'Boston Consulting Group', deadline: 22, location: 'Boston, MA', duration: '10 weeks', stipend: '$7,500/month', tags: ['Strategy', 'Consulting', 'Analysis', 'Presentation'] },
+                { title: 'Motion Graphics Intern', company: 'Pixar Animation Studios', deadline: 28, location: 'Emeryville, CA', duration: '12 weeks', stipend: '$7,000/month', tags: ['After Effects', 'Animation', '3D', 'Cinema 4D'] }
+            ],
+            6: [ // July
+                { title: 'Cloud Engineer Intern', company: 'IBM', deadline: 8, location: 'Armonk, NY', duration: '12 weeks', stipend: '$7,200/month', tags: ['Cloud Computing', 'Azure', 'Security', 'Networking'] },
+                { title: 'Research Intern', company: 'MIT Media Lab', deadline: 15, location: 'Cambridge, MA', duration: '10 weeks', stipend: '$6,000/month', tags: ['Research', 'Innovation', 'Technology', 'Prototyping'] }
+            ],
+            7: [ // August
+                { title: 'Cybersecurity Intern', company: 'Cisco Systems', deadline: 5, location: 'San Jose, CA', duration: '12 weeks', stipend: '$7,500/month', tags: ['Security', 'Network Security', 'Ethical Hacking', 'Penetration Testing'] },
+                { title: 'Data Engineer Intern', company: 'Snowflake', deadline: 12, location: 'San Mateo, CA', duration: '12 weeks', stipend: '$8,200/month', tags: ['SQL', 'ETL', 'Data Warehouse', 'Big Data'] },
+                { title: 'Operations Intern', company: 'Tesla', deadline: 20, location: 'Fremont, CA', duration: '10 weeks', stipend: '$6,800/month', tags: ['Operations', 'Logistics', 'Supply Chain', 'Process Improvement'] },
+                { title: 'Graphic Design Intern', company: 'Canva', deadline: 28, location: 'Sydney, Australia', duration: '12 weeks', stipend: 'A$7,000/month', tags: ['Graphic Design', 'Visual Design', 'Branding', 'Digital Design'] }
+            ],
+            8: [ // September
+                { title: 'iOS Developer Intern', company: 'Snap Inc.', deadline: 10, location: 'Los Angeles, CA', duration: '12 weeks', stipend: '$7,800/month', tags: ['Swift', 'iOS', 'Mobile Development', 'AR'] },
+                { title: 'Business Intelligence Intern', company: 'Oracle', deadline: 18, location: 'Redwood City, CA', duration: '10 weeks', stipend: '$7,000/month', tags: ['BI Tools', 'Reporting', 'Analytics', 'Data Visualization'] },
+                { title: 'Content Strategy Intern', company: 'HubSpot', deadline: 25, location: 'Cambridge, MA', duration: '12 weeks', stipend: '$6,500/month', tags: ['Content Marketing', 'SEO', 'Writing', 'Strategy'] }
+            ],
+            9: [ // October
+                { title: 'Game Developer Intern', company: 'Electronic Arts', deadline: 8, location: 'Redwood City, CA', duration: '12 weeks', stipend: '$7,500/month', tags: ['Unity', 'C#', 'Game Development', 'Unreal Engine'] },
+                { title: 'ML Engineer Intern', company: 'NVIDIA', deadline: 15, location: 'Santa Clara, CA', duration: '12 weeks', stipend: '$9,000/month', tags: ['CUDA', 'Deep Learning', 'GPU Computing', 'PyTorch'] },
+                { title: 'Interaction Designer', company: 'Samsung', deadline: 22, location: 'Seoul, South Korea', duration: '10 weeks', stipend: '₩8,000,000/month', tags: ['Interaction Design', 'Prototyping', 'UX', 'Mobile'] },
+                { title: 'Investment Banking Intern', company: 'JP Morgan Chase', deadline: 30, location: 'New York, NY', duration: '10 weeks', stipend: '$8,000/month', tags: ['Finance', 'Banking', 'Financial Modeling', 'Valuation'] }
+            ],
+            10: [ // November
+                { title: 'AR/VR Developer Intern', company: 'Meta Reality Labs', deadline: 5, location: 'Menlo Park, CA', duration: '16 weeks', stipend: '$9,500/month', tags: ['Unity', 'VR', 'C++', 'Augmented Reality'] },
+                { title: 'Data Visualization Intern', company: 'Tableau Software', deadline: 12, location: 'Seattle, WA', duration: '12 weeks', stipend: '$7,300/month', tags: ['Data Visualization', 'D3.js', 'Analytics', 'Dashboard Design'] },
+                { title: 'Product Marketing Intern', company: 'Slack Technologies', deadline: 20, location: 'San Francisco, CA', duration: '10 weeks', stipend: '$6,800/month', tags: ['Marketing', 'SaaS', 'B2B', 'Go-to-Market'] }
+            ],
+            11: [ // December
+                { title: 'Blockchain Developer Intern', company: 'Coinbase', deadline: 10, location: 'San Francisco, CA', duration: '12 weeks', stipend: '$8,500/month', tags: ['Blockchain', 'Solidity', 'Web3', 'Smart Contracts'] },
+                { title: 'NLP Engineer Intern', company: 'Hugging Face', deadline: 15, location: 'Remote', duration: '16 weeks', stipend: '$8,000/month', tags: ['NLP', 'Transformers', 'Python', 'Language Models'] },
+                { title: 'Service Design Intern', company: 'IDEO', deadline: 20, location: 'Palo Alto, CA', duration: '10 weeks', stipend: '$6,500/month', tags: ['Service Design', 'Innovation', 'User Research', 'Design Thinking'] }
+            ]
+        };
+
+        let currentOpenMonth = null;
+
+        function renderMonths() {
+            const monthsList = document.getElementById('months-list');
+            
+            months.forEach((month, index) => {
+                const internships = internshipsData[index] || [];
+                
+                const monthItem = document.createElement('div');
+                monthItem.className = 'month-item';
+                monthItem.onclick = () => toggleMonth(index);
+                
+                monthItem.innerHTML = `
+                    <div class="month-info">
+                        <div class="month-details">
+                            <h3>${month.name}</h3>
+                            <p>${month.season} 2025</p>
+                        </div>
+                    </div>
+                    <div class="month-count">${internships.length} Opportunities</div>
+                `;
+                
+                monthsList.appendChild(monthItem);
+                
+                // Create internship section
+                const internshipSection = document.createElement('div');
+                internshipSection.className = 'internship-section';
+                internshipSection.id = `internships-${index}`;
+                
+                if (internships.length === 0) {
+                    internshipSection.innerHTML = `
+                        <div class="no-internships">
+                            <div class="icon">📭</div>
+                            <h3>No Internships Available</h3>
+                            <p>There are currently no internship deadlines for ${month.name} 2025. Check back later!</p>
+                        </div>
+                    `;
+                } else {
+                    internshipSection.innerHTML = `
+                        <div class="internship-list">
+                            ${internships.map(internship => `
+                                <div class="internship-card">
+                                    <h3>${internship.title}</h3>
+                                    <div class="company">
+                                        <span>🏢</span>
+                                        <span>${internship.company}</span>
+                                    </div>
+                                    <div class="internship-details">
+                                        <div class="detail-item">
+                                            <span class="icon">📅</span>
+                                            <span><strong>Deadline:</strong> ${month.name} ${internship.deadline}, 2025</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="icon">📍</span>
+                                            <span><strong>Location:</strong> ${internship.location}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="icon">⏱️</span>
+                                            <span><strong>Duration:</strong> ${internship.duration}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="icon">💰</span>
+                                            <span><strong>Stipend:</strong> ${internship.stipend}</span>
+                                        </div>
+                                    </div>
+                                    <div class="tags">
+                                        ${internship.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                    </div>
+                                    <button class="apply-btn" onclick="applyInternship('${internship.title}', '${internship.company}')">
+                                        Apply Now →
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                monthsList.appendChild(internshipSection);
+            });
+        }
+
+        function toggleMonth(monthIndex) {
+            const monthItems = document.querySelectorAll('.month-item');
+            const internshipSections = document.querySelectorAll('.internship-section');
+            
+            // If clicking the same month, close it
+            if (currentOpenMonth === monthIndex) {
+                monthItems[monthIndex].classList.remove('active');
+                internshipSections[monthIndex].classList.remove('active');
+                currentOpenMonth = null;
+            } else {
+                // Close previously open month
+                if (currentOpenMonth !== null) {
+                    monthItems[currentOpenMonth].classList.remove('active');
+                    internshipSections[currentOpenMonth].classList.remove('active');
+                }
+                
+                // Open clicked month
+                monthItems[monthIndex].classList.add('active');
+                internshipSections[monthIndex].classList.add('active');
+                currentOpenMonth = monthIndex;
+                
+                // Scroll to the internship section
+                setTimeout(() => {
+                    internshipSections[monthIndex].scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }, 100);
+            }
+        }
+
+        function applyInternship(title, company) {
+            alert(`Applying for ${title} at ${company}!\n\nThis will redirect you to the company's application portal.`);
+            // In a real application, this would redirect to the actual application page
+        }
+
+        // Initialize calendar on page load
+        renderMonths();
+    </script>
+</body>
+</html>

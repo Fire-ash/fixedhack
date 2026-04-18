@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Dashboard - FixedHack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo-section {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.3rem;
+        }
+
+        .user-profile {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-email {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .section-title {
+            padding: 1rem 2rem 0.5rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .events-list {
+            padding: 0 1rem;
+        }
+
+        .event-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .event-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: white;
+        }
+
+        .event-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: white;
+        }
+
+        .event-item-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .event-item-meta {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-type-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .sidebar-footer {
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-events {
+            text-align: center;
+            padding: 2rem 1rem;
+            opacity: 0.8;
+        }
+
+        .empty-events p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .add-event-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            color: #667eea;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #56ab2f15 0%, #a8e06315 100%);
+            color: #56ab2f;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #764ba215 0%, #667eea15 100%);
+            color: #764ba2;
+        }
+
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            color: #f5576c;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .event-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .event-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .event-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .event-type {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-date {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .event-card-body {
+            padding: 1.5rem;
+        }
+
+        .event-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .event-stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .event-stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.3rem;
+        }
+
+        .event-stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f9f9ff;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div class="logo">🌐 FixedHack</div>
+                <div class="logo-subtitle">Host Dashboard</div>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-avatar">🏢</div>
+                <div class="user-name">Tech Innovators</div>
+                <div class="user-email">host@techinnovators.com</div>
+            </div>
+
+            <div class="section-title">Your Events</div>
+            <div class="events-list" id="sidebar-events">
+                <!-- Events will be loaded here -->
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="page-title">Event Management</h1>
+                <a href="addevent.html" class="add-event-btn">
+                    <span>+</span>
+                    <span>Add New Event</span>
+                </a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3 id="total-events">5</h3>
+                        <p>Total Events</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-info">
+                        <h3 id="active-events">3</h3>
+                        <p>Active Events</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👥</div>
+                    <div class="stat-info">
+                        <h3 id="total-registrations">247</h3>
+                        <p>Total Registrations</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">👁️</div>
+                    <div class="stat-info">
+                        <h3 id="total-views">1,234</h3>
+                        <p>Total Views</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2>All Events</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterEvents('all')">All</button>
+                        <button class="filter-btn" onclick="filterEvents('hackathon')">Hackathons</button>
+                        <button class="filter-btn" onclick="filterEvents('workshop')">Workshops</button>
+                        <button class="filter-btn" onclick="filterEvents('webinar')">Webinars</button>
+                    </div>
+                </div>
+                <div class="events-grid" id="events-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="add-event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Event</h2>
+                <button class="close-btn" onclick="closeAddEventModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleAddEvent(event)">
+                    <div class="form-group">
+                        <label>Event Title *</label>
+                        <input type="text" id="event-title" placeholder="Enter event title" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Event Type *</label>
+                            <select id="event-type" required>
+                                <option value="">Select type</option>
+                                <option value="hackathon">Hackathon</option>
+                                <option value="workshop">Workshop</option>
+                                <option value="webinar">Webinar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Date *</label>
+                            <input type="text" id="event-date" placeholder="e.g., Nov 25, 2025" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Location *</label>
+                            <input type="text" id="event-location" placeholder="Virtual or City, Country" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration *</label>
+                            <input type="text" id="event-duration" placeholder="e.g., 2 hours, 2 days" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prize / Fee *</label>
+                        <input type="text" id="event-prize" placeholder="e.g., $10,000, Free, Certificate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Registration URL *</label>
+                        <input type="url" id="event-url" placeholder="https://example.com/register" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="event-description" placeholder="Describe your event..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" id="event-tags" placeholder="e.g., AI, Python, Innovation">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Create Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+const API_EVENTS = "http://localhost:5000/api/events";
+
+// ----------------------
+// LOGIN CHECK
+// ----------------------
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+const email = localStorage.getItem("email");
+
+if (!token || role !== "host") {
+    alert("Please login as HOST first.");
+    window.location.href = "hostLogin.html";
+}
+
+document.querySelector(".user-email").innerText = email || "";
+
+// ----------------------
+// LOAD EVENTS
+// ----------------------
+async function loadEvents() {
+    try {
+        const res = await fetch(API_EVENTS, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const events = await res.json();
+
+        if (!res.ok) {
+            console.error(events);
+            alert(events.message || "Error loading events");
+            return;
+        }
+
+        console.log("EVENTS FROM BACKEND:", events);
+        renderEvents(events);
+
+    } catch (err) {
+        console.error(err);
+        alert("Could not connect to server.");
+    }
+}
+
+// ----------------------
+// RENDER EVENTS
+// ----------------------
+function renderEvents(events) {
+    const grid = document.getElementById("events-grid");
+    const sidebar = document.getElementById("sidebar-events");
+
+    if (!events.length) {
+        grid.innerHTML = "<p>No events found.</p>";
+        sidebar.innerHTML = "<p>No events available.</p>";
+        return;
+    }
+
+    // Sidebar list
+    sidebar.innerHTML = events
+        .map(
+            (e) => `
+        <div class="event-item">
+            <div class="event-item-title">${e.title}</div>
+            <div class="event-item-meta">
+                <span>${e.date_text || e.start_date}</span>
+                <span class="event-type-badge">${e.type}</span>
+            </div>
+        </div>`
+        )
+        .join("");
+
+    // Main grid
+    grid.innerHTML = events
+        .map(
+            (e) => `
+        <div class="event-card">
+            <div class="event-card-header">
+                <span class="event-type">${e.type}</span>
+                <h3 class="event-title">${e.title}</h3>
+                <div class="event-date">📅 ${e.date_text || e.start_date}</div>
+            </div>
+
+            <div class="event-card-body">
+    <div class="event-stats">
+        <div class="event-stat-item">
+            <div class="event-stat-number">${e.registrations}</div>
+            <div class="event-stat-label">Registrations</div>
+        </div>
+
+        <div class="event-stat-item">
+            <div class="event-stat-number">${e.views}</div>
+            <div class="event-stat-label">Views</div>
+        </div>
+    </div>
+
+    <div class="event-actions">
+        <button class="btn btn-danger" onclick="deleteEvent(${e.id})">
+            Delete Event
+        </button>
+    </div>
+</div>`
+
+        )
+        .join("");
+}
+
+// ----------------------
+// LOGOUT
+// ----------------------
+function logout() {
+    localStorage.clear();
+    window.location.href = "hostLogin.html";
+}
+
+// ----------------------
+// RUN
+// ----------------------
+loadEvents();
+async function deleteEvent(id) {
+    const confirmDelete = confirm("Are you sure you want to delete this event?");
+    if (!confirmDelete) return;
+
+    try {
+        const res = await fetch(`${API_EVENTS}/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            alert(data.message || "Error deleting event");
+            return;
+        }
+
+        alert("Event deleted successfully!");
+        loadEvents(); // refresh UI
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error while deleting.");
+    }
+}
+
+</script>
+
+

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event - FixedHack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f9f9ff;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #28a745;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="host-dashboard.html" class="back-btn">← Back to Dashboard</a>
+        
+        <div class="page-header">
+            <h1>Add New Event</h1>
+            <p>Fill in the details to create your event</p>
+        </div>
+
+        <div class="form-container">
+            <div id="success-message" class="success-message">
+                Event created successfully! Redirecting to dashboard...
+            </div>
+
+            <form id="add-event-form" onsubmit="handleSubmit(event)">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="event-title">Event Title <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="event-title" 
+                            name="title"
+                            required 
+                            placeholder="e.g., AI Innovation Hackathon 2025"
+                            maxlength="100"
+                        >
+                        <div class="char-count">
+                            <span id="title-count">0</span>/100 characters
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-type">Event Type <span class="required">*</span></label>
+                        <select id="event-type" name="type" required>
+                            <option value="">Select event type</option>
+                            <option value="hackathon">Hackathon</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="webinar">Webinar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-description">Event Description <span class="required">*</span></label>
+                        <textarea 
+                            id="event-description" 
+                            name="description"
+                            required 
+                            placeholder="Describe your event, what participants will learn or build, and any special highlights..."
+                            maxlength="500"
+                        ></textarea>
+                        <div class="char-count">
+                            <span id="description-count">0</span>/500 characters
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date & Location -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Date & Location</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event-start-date">Start Date <span class="required">*</span></label>
+                            <input 
+                                type="date" 
+                                id="event-start-date" 
+                                name="startDate"
+                                required
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="event-end-date">End Date <span class="required">*</span></label>
+                            <input 
+                                type="date" 
+                                id="event-end-date" 
+                                name="endDate"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event-start-time">Start Time</label>
+                            <input 
+                                type="time" 
+                                id="event-start-time" 
+                                name="startTime"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="event-end-time">End Time</label>
+                            <input 
+                                type="time" 
+                                id="event-end-time" 
+                                name="endTime"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-location">Location/Venue <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="event-location" 
+                            name="location"
+                            required 
+                            placeholder="e.g., Virtual Event or New York Convention Center"
+                        >
+                        <div class="form-help">Enter "Virtual Event" for online events or the physical address</div>
+                    </div>
+                </div>
+
+                <!-- Event Details -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Event Details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event-prize">Prize/Fee <span class="required">*</span></label>
+                            <input 
+                                type="text" 
+                                id="event-prize" 
+                                name="prize"
+                                required 
+                                placeholder="e.g., $10,000 or Free or Certificate"
+                            >
+                            <div class="form-help">Enter prize money, registration fee, or "Free"</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-capacity">Max Participants</label>
+                            <input 
+                                type="number" 
+                                id="event-capacity" 
+                                name="capacity"
+                                min="1"
+                                placeholder="e.g., 500"
+                            >
+                            <div class="form-help">Leave blank for unlimited</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-organizer">Organizer Name <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="event-organizer" 
+                            name="organizer"
+                            required 
+                            placeholder="e.g., Tech Innovators Inc."
+                        >
+                    </div>
+                </div>
+
+                <!-- Registration -->
+                <div class="form-section">
+                    <h2 class="form-section-title">Registration</h2>
+                    
+                    <div class="form-group">
+                        <label for="event-registration-url">Registration Page Link <span class="required">*</span></label>
+                        <input 
+                            type="url" 
+                            id="event-registration-url" 
+                            name="registrationUrl"
+                            required 
+                            placeholder="https://example.com/event-registration"
+                        >
+                        <div class="form-help">Provide the complete URL where participants can register (must start with http:// or https://)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event-deadline">Registration Deadline</label>
+                        <input 
+                            type="date" 
+                            id="event-deadline" 
+                            name="deadline"
+                        >
+                        <div class="form-help">Optional: Set a registration deadline</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="handleCancel()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // Character counter for title
+    document.getElementById('event-title').addEventListener('input', function() {
+        document.getElementById('title-count').textContent = this.value.length;
+    });
+
+    // Character counter for description
+    document.getElementById('event-description').addEventListener('input', function() {
+        document.getElementById('description-count').textContent = this.value.length;
+    });
+
+    // Validate end date
+    document.getElementById('event-end-date').addEventListener('change', function() {
+        const startDate = document.getElementById('event-start-date').value;
+        const endDate = this.value;
+
+        if (startDate && endDate && endDate < startDate) {
+            alert("End date cannot be before start date");
+            this.value = "";
+        }
+    });
+
+    // -------------------------
+    // MAIN SUBMIT HANDLER
+    // -------------------------
+    async function handleSubmit(event) {
+    event.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (!token || role !== "host") {
+        alert("Please login as HOST first.");
+        return;
+    }
+
+    const data = new FormData(event.target);
+    const raw = {};
+    data.forEach((v, k) => raw[k] = v);
+
+    // ------------ MAP FRONTEND → BACKEND EXACTLY ------------ //
+    const payload = {
+        title: raw.title,
+        description_full: raw.description,
+        description_short: raw.description.slice(0, 120),
+        start_date: raw.startDate,
+        end_date: raw.endDate,
+        type: raw.type === "workshop" ? "webinar" : raw.type,  
+        location: raw.location,
+        prize: raw.prize,
+        participants: raw.capacity || "N/A",
+        organizer: raw.organizer,
+        apply_link: raw.registrationUrl,
+        tags: "General",
+        duration:
+            raw.startTime && raw.endTime
+                ? `${raw.startTime} - ${raw.endTime}`
+                : "N/A",
+        views: 0,
+        registrations: 0,
+        status: "upcoming",
+        date_text: `${raw.startDate} to ${raw.endDate}`,
+    };
+
+    console.log("FINAL PAYLOAD TO BACKEND:", payload);
+
+    try {
+        const res = await fetch("http://localhost:5000/api/events", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            alert("Error: " + err.message);
+            return;
+        }
+
+        document.getElementById("success-message").classList.add("show");
+
+        setTimeout(() => {
+            window.location.href = "hostdash_board.html";
+        }, 1500);
+
+    } catch (e) {
+        console.error(e);
+        alert("Failed to connect to backend.");
+    }
+}
+
+
+    // Cancel button logic
+    function handleCancel() {
+        if (confirm("Are you sure you want to cancel?")) {
+            window.location.href = "hostdash_board.html";
+        }
+    }
+
+    // Set min dates
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById('event-start-date').setAttribute('min', today);
+    document.getElementById('event-end-date').setAttribute('min', today);
+    document.getElementById('event-deadline').setAttribute('min', today);
+</script>
+
+</body>
+</html>
