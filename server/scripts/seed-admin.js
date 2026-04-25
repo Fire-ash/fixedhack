@@ -19,7 +19,7 @@ async function main() {
   const passwordPlain = 'password123';
   const name = 'Admin';
 
-  const [rows] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+  const {rows} = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
   if (rows.length > 0) {
     console.log('Admin already exists:', email);
     process.exit(0);

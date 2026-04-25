@@ -1,17 +1,15 @@
 require('dotenv').config();
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
-console.log("DB PASSWORD IN USE:", process.env.DB_PASSWORD);
-console.log("DB PASS LEGACY:", process.env.DB_PASS);
-
-
-const pool = mysql.createPool({
+const pool = new Pool({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  connectionLimit: 10
+  port: process.env.DB_PORT || 5432,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = pool;

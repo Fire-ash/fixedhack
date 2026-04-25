@@ -9,7 +9,7 @@ const errors = validationResult(req);
 if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 const { name, email, password } = req.body;
 try {
-const [rows] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+const {rows} = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
 if (rows.length) return res.status(400).json({ message: 'Email already registered' });
 const hash = await bcrypt.hash(password, 10);
 const [result] = await pool.query('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)', [name, email, hash, 'admin']);
@@ -26,7 +26,7 @@ const errors = validationResult(req);
 if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 const { email, password } = req.body;
 try {
-const [rows] = await pool.query('SELECT id, password_hash, role FROM users WHERE email = ?', [email]);
+const {rows} = await pool.query('SELECT id, password_hash, role FROM users WHERE email = ?', [email]);
 if (!rows.length) return res.status(400).json({ message: 'Invalid credentials' });
 const user = rows[0];
 const match = await bcrypt.compare(password, user.password_hash);

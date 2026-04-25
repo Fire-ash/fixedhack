@@ -67,7 +67,7 @@ exports.getEventById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [rows] = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
+        const {rows} = await pool.query('SELECT * FROM events WHERE id = ?', [id]);
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Event not found' });
         }
@@ -151,7 +151,7 @@ exports.createEvent = async (req, res) => {
 
         const newId = result.insertId;
 
-        const [rows] = await pool.query('SELECT * FROM events WHERE id = ?', [
+        const {rows} = await pool.query('SELECT * FROM events WHERE id = ?', [
             newId
         ]);
 
@@ -313,7 +313,7 @@ exports.getStudentRegistrations = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        const [rows] = await pool.query(
+        const {rows} = await pool.query(
             `
             SELECT e.*
             FROM events e
@@ -339,7 +339,7 @@ exports.getStudentViews = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        const [rows] = await pool.query(
+        const {rows} = await pool.query(
             `
             SELECT e.*
             FROM events e

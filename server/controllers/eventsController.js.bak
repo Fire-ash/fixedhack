@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 exports.listEvents = async (req, res) => {
 try {
-const [rows] = await pool.query('SELECT id, title, description_short, start_date, end_date, type, apply_link, organizer, tags FROM events ORDER BY start_date DESC LIMIT 100');
+const {rows} = await pool.query('SELECT id, title, description_short, start_date, end_date, type, apply_link, organizer, tags FROM events ORDER BY start_date DESC LIMIT 100');
 res.json({ events: rows });
 } catch (err) {
 console.error(err);
@@ -17,7 +17,7 @@ if (!title || !type) return res.status(400).json({ message: 'title and type requ
 const [result] = await pool.query('INSERT INTO events (title, description_full, description_short, start_date, end_date, type, apply_link, organizer, tags, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [title, description_full, description_short, start_date, end_date, type, apply_link, organizer, tags, req.user ? req.user.id : null]
     );
- const [rows] = await pool.query('SELECT * FROM events WHERE id = ?', [result.insertId]);
+ const {rows} = await pool.query('SELECT * FROM events WHERE id = ?', [result.insertId]);
 res.status(201).json({ message: 'Event created', event: rows[0] });
 } catch (err) {
 console.error(err);

@@ -9,7 +9,7 @@ exports.notifyOpportunity = async (req, res) => {
     const [users] = await pool.query('SELECT id, email FROM users WHERE is_verified = 1');
     const created = [];
     for (const u of users) {
-      const [r] = await pool.query(
+      const {r} = await pool.query(
         'INSERT INTO notifications (user_id, opportunity_id, status, created_at) VALUES (?, ?, ?, NOW())',
         [u.id, oppId, 'pending']
       );
