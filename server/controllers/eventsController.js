@@ -50,7 +50,7 @@ function mapEventRow(row) {
 // GET /api/events  – public list for site & host dashboard
 exports.getEvents = async (req, res) => {
     try {
-        const [rows] = await pool.query(
+        const {rows} = await pool.query(
             'SELECT * FROM events ORDER BY created_at DESC'
         );
 
