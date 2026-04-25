@@ -417,7 +417,7 @@
 // Load events from backend
 async function loadEvents() {
     try {
-        const res = await fetch("http://localhost:5000/api/events");
+        const res = await fetch("https://fixedhack.onrender.com/api");
         const events = await res.json();
         allEvents = events;
         renderEvents(allEvents);
@@ -523,7 +523,7 @@ async function registerEvent(eventId) {
 
     // If already registered → UNREGISTER
     if (btn && btn.dataset.registered === "true") {
-        const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+        const res = await fetch(`https://fixedhack.onrender.com/api/events/${eventId}/register`, {
             method: "DELETE",
             headers: { "Authorization": "Bearer " + token }
         });
@@ -537,7 +537,7 @@ async function registerEvent(eventId) {
     }
 
     // Else → REGISTER
-    const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+    const res = await fetch(`https://fixedhack.onrender.com/api/events/${eventId}/register`, {
         method: "POST",
         headers: { "Authorization": "Bearer " + token }
     });
