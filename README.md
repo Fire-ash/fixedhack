@@ -1,31 +1,27 @@
-FixedHack 🚀
+FixedHack(Web-based Service)
 
 A full-stack web platform for discovering and tracking hackathons.
 
-🌐 Live Demo
-
+Live Demonstration Link(deployed on netlify)
 https://fixedhack.netlify.app/
 
-⚙️ Backend API
-
+Backend API
 https://fixedhack.onrender.com
 
-🛠 Tech Stack
-
+Tech Stack Involved
 * Frontend: HTML, CSS, JavaScript
 * Backend: Node.js, Express
 * Database: PostgreSQL (Neon)
 * Deployment: Netlify + Render
 
-✨ Features
-
+Features
 * Browse hackathons
 * View event details
 * Track registrations
 * Responsive UI
+* Get Notified
 
-📦 Installation (Local)
-
+Installation (Local)
 ```bash
 git clone https://github.com/Fire-ash/fixedhack.git
 cd fixedhack/server
@@ -33,6 +29,6 @@ npm install
 npm run dev
 ```
 
-⚠️ Note
+Note
 
 Environment variables required for backend (DB credentials)
